@@ -1,8 +1,9 @@
 const { DataTypes } = require("sequelize");
+const bcrypt = require("bcrypt");
 
 module.exports = (sequelize) => {
-  const Project = sequelize.define(
-    "project",
+  const User = sequelize.define(
+    "user",
     {
       id: {
         type: DataTypes.INTEGER,
@@ -10,26 +11,35 @@ module.exports = (sequelize) => {
         allowNull: false,
         autoIncrement: true,
       },
-      title: {
+      email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
       },
-      description: {
+      password: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      image: {
+      role: {
         type: DataTypes.STRING,
-        defaultValue: "null",
+        defaultValue: "user",
+      },
+      deleted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       },
     },
     {
       timestamps: true,
       freezeTableName: true,
-      tableName: "project",
+      tableName: "user",
     }
   );
 
-  return Project;
+  User.beforeCreate((user) => {
+    user.password = user.password ? bcrypt.hashSync(user.password, 10) : null;
+  });
+
+  return User;
 };

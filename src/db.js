@@ -3,7 +3,9 @@ const { Sequelize } = require("sequelize");
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = process.env;
 
 const aboutModel = require("./models/aboutModel");
-const projectsModel = require("./models/projectsModel");
+const projectModel = require("./models/projectModel");
+const technologyModel = require("./models/technologyModel");
+const userModel = require("./models/userModel");
 
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
@@ -23,7 +25,14 @@ sequelize
   });
 
 aboutModel(sequelize);
-projectsModel(sequelize);
+projectModel(sequelize);
+technologyModel(sequelize);
+userModel(sequelize);
+
+const { project, technology } = sequelize.models;
+
+project.belongsToMany(technology, { through: "ProjectTechnology" });
+technology.belongsToMany(project, { through: "ProjectTechnology" });
 
 module.exports = {
   ...sequelize.models,
